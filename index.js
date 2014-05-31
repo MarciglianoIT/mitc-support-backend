@@ -1,17 +1,28 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+const app = require('express')();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+const firebase = require("./firebase/firebase");
+const bodyParser = require("body-parser");
 
-app.get('/', function(req, res){
-  res.sendfile('index.html');
+const firebaseRoutes = require('./routes/firebase');
+const userRoutes = require('./routes/user');
+
+const port = process.env.PORT || 3000;
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use("/user", userRoutes);
+
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
 });
 
-io.on('connection', function(socket){
-  socket.on('chat message', function(msg){
+io.on('connection', (socket) => {
+  socket.on('chat message', msg => {
     io.emit('chat message', msg);
   });
 });
 
-http.listen(3000, function(){
-  console.log('listening on *:3000');
+http.listen(port, () => {
+  console.log(`Socket.IO server running at http://localhost:${port}/`);
 });

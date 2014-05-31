@@ -1,9 +1,26 @@
 {
-  "name": "socket-chat-example",
+  "name": "mitc-support-backend",
   "version": "0.0.1",
-  "description": "my first socket.io app",
+  "description": "Backend for the Marcigliano IT Consulting support",
   "dependencies": {
-    "express": "4.3.1",
-    "socket.io": "1.0.0"
+    "dotenv": "^16.0.0",
+    "express": "^4.17.1",
+    "firebase-admin": "^10.0.2",
+    "mysql2": "^2.3.3",
+    "sequelize": "^6.16.1",
+    "socket.io": "^4.1.2"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "jest --detectOpenHandles",
+    "migrations": "npx sequelize-cli db:migrate",
+    "testCoverage":"jest --detectOpenHandles --coverage",
+    "sequelize:prod": "npx sequelize-cli db:seed:all $* --seeders-path seeders/production",
+    "sequelize:dev": "npx sequelize-cli db:seed:all $* --seeders-path seeders/development"
+  },
+  "devDependencies": {
+    "jest": "^27.5.1",
+    "nodemon": "^2.0.15"
   }
 }

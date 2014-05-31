@@ -1,0 +1,102 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+            MYSQL_ALLOW_EMPTY_PASSWORD: yes
+            MYSQL_DATABASE: test
+            MYSQL_ROOT_PASSWORD: root
+        ports:
+            - '8888:3306'
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm run build --if-present
+      - run: yarn install
+      - run: mysql -h 127.0.0.1 --port 8888 -u root -proot -e 'CREATE DATABASE IF NOT EXISTS test;'
+      - run: mysql -h 127.0.0.1 --port 8888 -u root -proot -e "ALTER USER root IDENTIFIED WITH mysql_native_password BY 'root';"
+      - run: mysql -h 127.0.0.1 --port 8888 -u root -proot -e "flush privileges;"
+      - run: yarn migrations
+        env: 
+          NODE_ENV: development
+          DEV_DATABASE_URL: mysql://root:root@localhost:8888/test
+      - run: yarn sequelize:dev
+        env: 
+          NODE_ENV: development
+          DEV_DATABASE_URL: mysql://root:root@localhost:8888/test
+      - run: yarn test
+        env: 
+          NODE_ENV: development
+          GOOGLE_CONFIG_BASE64: ${{ secrets.GOOGLE_CONFIG_BASE64 }}
+          DEV_DATABASE_URL: mysql://root:root@localhost:8888/test
+          NODE_APP_FIREBASE_KEY: ${{ secrets.NODE_APP_FIREBASE_KEY }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+          MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          MAIL_USER: ${{ secrets.MAIL_USER }}
+          MAIL_PASS: ${{ secrets.MAIL_PASS }}
+
+  coverage:
+    needs: [build]
+    name: coverage
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+            MYSQL_ALLOW_EMPTY_PASSWORD: yes
+            MYSQL_DATABASE: test
+            MYSQL_ROOT_PASSWORD: root
+        ports:
+            - '8888:3306'
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-node@master
+        with:
+          node-version: '14'
+      - run: yarn install
+      - run: mysql -h 127.0.0.1 --port 8888 -u root -proot -e 'CREATE DATABASE IF NOT EXISTS test;'
+      - run: mysql -h 127.0.0.1 --port 8888 -u root -proot -e "ALTER USER root IDENTIFIED WITH mysql_native_password BY 'root';"
+      - run: mysql -h 127.0.0.1 --port 8888 -u root -proot -e "flush privileges;"
+      - run: yarn migrations
+        env: 
+          NODE_ENV: development
+          DEV_DATABASE_URL: mysql://root:root@localhost:8888/test
+      - run: yarn sequelize:dev
+        env: 
+          NODE_ENV: development
+          DEV_DATABASE_URL: mysql://root:root@localhost:8888/test
+      - uses: paambaati/codeclimate-action@v2.7.2
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+          GOOGLE_CONFIG_BASE64: ${{ secrets.GOOGLE_CONFIG_BASE64 }}
+          NODE_ENV: development
+          DEV_DATABASE_URL: mysql://root:root@localhost:8888/test
+          NODE_APP_FIREBASE_KEY: ${{ secrets.NODE_APP_FIREBASE_KEY }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+          MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          MAIL_USER: ${{ secrets.MAIL_USER }}
+          MAIL_PASS: ${{ secrets.MAIL_PASS }}
+        with:
+          coverageCommand: yarn testCoverage
+          debug: true
