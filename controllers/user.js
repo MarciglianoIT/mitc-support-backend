@@ -2,10 +2,11 @@ const sequelize = require("../util/database");
 const User = require("../models/user");
 const UserData = require("../models/userdata");
 
+require("dotenv").config();
+
 const transaction = async (callBack, data) => {
   try {
     await sequelize.transaction(callBack);
-    console.log(data);
     const result = await getUser(data.id);
     return { status: 200, data: result };
   } catch (error) {
@@ -65,7 +66,7 @@ const deleteUser = async (data) => {
   return transaction(deletedUser, data);
 };
 
-exports.createOrUpdateUserData = async (req, res, next) => {
+const createOrUpdateUserData = async (req, res, next) => {
   try {
     const data = req.body;
 
@@ -78,15 +79,17 @@ exports.createOrUpdateUserData = async (req, res, next) => {
     }
 
     if (response.data) {
-      return res.status(response.status).send(response.data);
+      res.status(response.status).send(response.data);
+      return response;
     }
     return res.status(response.status).send(response.error);
   } catch (error) {
-    return res.status(500).send({ message: error.message });
+    res.status(500).send({ message: error.message });
+    return error;
   }
 };
 
-exports.deleteUserData = async (req, res, next) => {
+const deleteUserData = async (req, res, next) => {
   try {
     const data = req.body;
 
@@ -100,11 +103,11 @@ exports.deleteUserData = async (req, res, next) => {
   }
 };
 
-if(process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test") {
-  module.exports = {
-    getUser,
-    createUser,
-    updateUser,
-    deleteUser,
-  }
-}
+module.exports = {
+  createOrUpdateUserData,
+  deleteUserData,
+  getUser,
+  createUser,
+  updateUser,
+  deleteUser,
+};

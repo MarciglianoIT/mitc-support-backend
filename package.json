@@ -3,11 +3,13 @@
   "version": "0.0.1",
   "description": "Backend for the Marcigliano IT Consulting support",
   "dependencies": {
+    "axios": "^0.26.0",
     "dotenv": "^16.0.0",
     "express": "^4.17.1",
     "firebase-admin": "^10.0.2",
     "mysql2": "^2.3.3",
     "sequelize": "^6.16.1",
+    "sinon": "^13.0.1",
     "socket.io": "^4.1.2"
   },
   "scripts": {
@@ -15,7 +17,7 @@
     "dev": "nodemon index.js",
     "test": "jest --detectOpenHandles",
     "migrations": "npx sequelize-cli db:migrate",
-    "testCoverage":"jest --detectOpenHandles --coverage",
+    "testCoverage": "jest --detectOpenHandles --coverage",
     "sequelize:prod": "npx sequelize-cli db:seed:all $* --seeders-path seeders/production",
     "sequelize:dev": "npx sequelize-cli db:seed:all $* --seeders-path seeders/development"
   },
