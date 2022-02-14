@@ -1,3 +1,7 @@
+[![Maintainability](https://api.codeclimate.com/v1/badges/927d63d96689d5e25a77/maintainability)](https://codeclimate.com/github/MarciglianoIT/mitc-support-backend/maintainability)
+
+[![Test Coverage](https://api.codeclimate.com/v1/badges/927d63d96689d5e25a77/test_coverage)](https://codeclimate.com/github/MarciglianoIT/mitc-support-backend/test_coverage)
+
 # chat-example
 
 This is the source code for a very simple chat example used for
