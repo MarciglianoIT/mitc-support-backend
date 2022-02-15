@@ -9,10 +9,11 @@ exports.isUser = async (req, res, next) => {
         next();
         return;
       }
-      return res.status(403).send({ message: "Could not authorize" });
+      return res.status(403).send({ type: "Could not authorize" });
     }
     return res.status(401).send({ message: "Invalid token" });
   } catch (error) {
+    console.log(error);
     return res.status(500).send({ type: "Unexpeced error", message: error });
   }
 };

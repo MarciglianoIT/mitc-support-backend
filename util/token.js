@@ -1,4 +1,5 @@
 const admin = require("firebase-admin");
+require("../firebase/firebase");
 
 exports.Token = async (token) => {
   const tokenProvided = () => !token;
@@ -24,6 +25,7 @@ exports.Token = async (token) => {
       await admin.auth().verifyIdToken(extractedToken);
       return true;
     } catch (c) {
+      console.log(c);
       return false;
     }
   };

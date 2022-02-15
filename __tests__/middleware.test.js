@@ -1,7 +1,3 @@
-const admin = require("firebase-admin");
-const axios = require("axios");
-const firebase = require("../firebase/firebase");
-
 const { isUser } = require("../middleware/");
 const {
   mockRequest,
