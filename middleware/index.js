@@ -2,6 +2,7 @@ const { Token } = require("../util/token");
 
 exports.isUser = async (req, res, next) => {
   try {
+    console.log(req.get("authorization"));
     const verifyToken = await Token(req.get("authorization"));
     if (verifyToken.isValid) {
       const isVerified = verifyToken.isVerifiedResult;
