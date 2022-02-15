@@ -4,6 +4,7 @@ const middleware = require("../middleware");
 
 const router = express.Router();
 
+router.get("/user-data/:id", userController.getUserData);
 router.post(
   "/user-data",
   middleware.isUser,

@@ -66,6 +66,15 @@ const deleteUser = async (data) => {
   return transaction(deletedUser, data);
 };
 
+const getUserData = async (req, res, next) => {
+  try {
+    const result = await getUser(req.params.id);
+    return res.status(200).send(result);
+  } catch (error) {
+    return res.status(500).send({ message: error });
+  }
+}
+
 const createOrUpdateUserData = async (req, res, next) => {
   try {
     const data = req.body;
@@ -104,6 +113,7 @@ const deleteUserData = async (req, res, next) => {
 };
 
 module.exports = {
+  getUserData,
   createOrUpdateUserData,
   deleteUserData,
   getUser,
